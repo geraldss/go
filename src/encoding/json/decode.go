@@ -11,6 +11,7 @@ import (
 	"encoding"
 	"encoding/base64"
 	"fmt"
+	"math/big"
 	"reflect"
 	"strconv"
 	"strings"
@@ -827,17 +828,34 @@ func (d *decodeState) object(v reflect.Value) error {
 	return nil
 }
 
-// convertNumber converts the number literal s to a float64 or a Number
+// convertNumber converts the number literal s to a primitive or a Number
 // depending on the setting of d.useNumber.
 func (d *decodeState) convertNumber(s string) (interface{}, error) {
 	if d.useNumber {
 		return Number(s), nil
 	}
-	f, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		return nil, &UnmarshalTypeError{Value: "number " + s, Type: reflect.TypeOf(0.0), Offset: int64(d.off)}
+
+	i, err := strconv.ParseInt(s, 0, 64)
+	if err == nil {
+		return i, nil
 	}
-	return f, nil
+
+	bi := &big.Int{}
+	if bi, ok := bi.SetString(s, 0); ok {
+		return bi, nil
+	}
+
+	bf := &big.Float{}
+	bf, _, err = bf.Parse(s, 0)
+	if err != nil {
+		return bf, err
+	}
+
+	if f, acc := bf.Float64(); acc == big.Exact {
+		return f, nil
+	}
+
+	return bf, nil
 }
 
 var numberType = reflect.TypeOf(Number(""))
@@ -1090,6 +1108,7 @@ func (d *decodeState) objectInterface() map[string]interface{} {
 		if !ok {
 			panic(phasePanicMsg)
 		}
+		key = _NAME_HASH.hash(key)
 
 		// Read : before value.
 		if d.opcode == scanSkipSpace {
