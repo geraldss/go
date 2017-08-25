@@ -17,8 +17,10 @@ type NameHash struct {
 	names map[string]string
 }
 
+const NAME_HASH_CAP = 64 * 1024
+
 var NAME_HASH = &NameHash{
-	names: make(map[string]string, 64*1024),
+	names: make(map[string]string, NAME_HASH_CAP),
 }
 
 func (this *NameHash) Hash(in string) (out string) {
@@ -33,7 +35,9 @@ func (this *NameHash) Hash(in string) (out string) {
 	this.Lock()
 	out, ok = this.names[in]
 	if !ok {
-		this.names[in] = in
+		if len(this.names) < NAME_HASH_CAP {
+			this.names[in] = in
+		}
 		out = in
 	}
 	this.Unlock()
