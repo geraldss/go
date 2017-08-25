@@ -831,6 +831,7 @@ func (d *decodeState) object(v reflect.Value) error {
 	return nil
 }
 
+// geraldss/go: Parse numbers exactly, without loss of precision.
 // convertNumber converts the number literal s to a primitive or a Number
 // depending on the setting of d.useNumber.
 func (d *decodeState) convertNumber(s string) (interface{}, error) {
@@ -1111,6 +1112,8 @@ func (d *decodeState) objectInterface() map[string]interface{} {
 		if !ok {
 			panic(phasePanicMsg)
 		}
+
+		// geraldss/go: Hash object names to conserve memory
 		key = encoding.NAME_HASH.Hash(key)
 
 		// Read : before value.

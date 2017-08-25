@@ -17,7 +17,7 @@ type NameHash struct {
 	names map[string]string
 }
 
-const NAME_HASH_CAP = 64 * 1024
+const NAME_HASH_CAP = 1024 * 1024
 
 var NAME_HASH = &NameHash{
 	names: make(map[string]string, NAME_HASH_CAP),

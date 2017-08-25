@@ -7,12 +7,13 @@
 package gob
 
 import (
-	"encoding"
 	"errors"
 	"io"
 	"math"
 	"math/bits"
 	"reflect"
+
+	"github.com/geraldss/go/src/encoding"
 )
 
 var (
@@ -569,9 +570,22 @@ func (dec *Decoder) decodeMap(mtyp reflect.Type, state *decoderState, value refl
 	keyZ := reflect.Zero(mtyp.Key())
 	elemP := reflect.New(mtyp.Elem())
 	elemZ := reflect.Zero(mtyp.Elem())
+
+	// geraldss/go: Hash object names to conserve memory
+	hash := mtyp.Key().Kind() == reflect.String
+
 	for i := 0; i < n; i++ {
 		key := decodeIntoValue(state, keyOp, keyIsPtr, keyP.Elem(), keyInstr)
 		elem := decodeIntoValue(state, elemOp, elemIsPtr, elemP.Elem(), elemInstr)
+
+		// geraldss/go: Hash object names to conserve memory
+		if hash {
+			if str, ok := key.Interface().(string); ok {
+				str = encoding.NAME_HASH.Hash(str)
+				key.SetString(str)
+			}
+		}
+
 		value.SetMapIndex(key, elem)
 		keyP.Elem().Set(keyZ)
 		elemP.Elem().Set(elemZ)
