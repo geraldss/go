@@ -8,6 +8,7 @@
 package json
 
 import (
+	"bytes"
 	"encoding"
 	"encoding/base64"
 	"fmt"
@@ -18,6 +19,8 @@ import (
 	"unicode"
 	"unicode/utf16"
 	"unicode/utf8"
+
+	"github.com/geraldss/go/src/encoding"
 )
 
 // Unmarshal parses the JSON-encoded data and stores the result
@@ -1108,7 +1111,7 @@ func (d *decodeState) objectInterface() map[string]interface{} {
 		if !ok {
 			panic(phasePanicMsg)
 		}
-		key = _NAME_HASH.hash(key)
+		key = encoding.NAME_HASH.Hash(key)
 
 		// Read : before value.
 		if d.opcode == scanSkipSpace {

@@ -1,28 +1,31 @@
 // Copyright (c) 2017 Gerald Sangudi. All rights reserved.
 
-package json
+package encoding
 
 import (
 	"sync"
 )
 
+func HashName(in string) (out string) {
+	return NAME_HASH.Hash(in)
+}
+
 // Global hash of names used in name-value objects.
-type nameHash struct {
+type NameHash struct {
 	sync.RWMutex
 
 	names map[string]string
 }
 
-var _NAME_HASH = &nameHash{
+var NAME_HASH = &NameHash{
 	names: make(map[string]string, 64*1024),
 }
 
-func (this *nameHash) hash(in string) (out string) {
+func (this *NameHash) Hash(in string) (out string) {
 
 	this.RLock()
 	out, ok := this.names[in]
 	this.RUnlock()
-
 	if ok {
 		return
 	}
