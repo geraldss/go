@@ -849,7 +849,7 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return bi, nil
 	}
 
-	bf := &big.Float{}
+	bf := big.NewFloat(0)
 	bf, _, err = bf.Parse(s, 0)
 	if err != nil {
 		return bf, err
@@ -984,7 +984,7 @@ func (d *decodeState) literalStore(item []byte, v reflect.Value, fromQuoted bool
 		}
 
 	default: // number
-		if c != '-' && (c < '0' || c > '9') {
+		if c != '-' && (c < '0' || c > '9') && c != '.' {
 			if fromQuoted {
 				return fmt.Errorf("json: invalid use of ,string struct tag, trying to unmarshal %q into %v", item, v.Type())
 			}
@@ -1167,7 +1167,7 @@ func (d *decodeState) literalInterface() interface{} {
 		return s
 
 	default: // number
-		if c != '-' && (c < '0' || c > '9') {
+		if c != '-' && (c < '0' || c > '9') && c != '.' {
 			panic(phasePanicMsg)
 		}
 		n, err := d.convertNumber(string(item))

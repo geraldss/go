@@ -230,6 +230,9 @@ func stateBeginValue(s *scanner, c byte) int {
 	case '0': // beginning of 0.123
 		s.step = state0
 		return scanBeginLiteral
+	case '.': // beginning of .123
+		s.step = stateDot
+		return scanBeginLiteral
 	case 't': // beginning of true
 		s.step = stateT
 		return scanBeginLiteral
