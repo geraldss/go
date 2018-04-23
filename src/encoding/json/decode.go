@@ -1113,9 +1113,6 @@ func (d *decodeState) objectInterface() map[string]interface{} {
 			panic(phasePanicMsg)
 		}
 
-		// geraldss/go: Hash object names to conserve memory
-		key = encoding.NAME_HASH.Hash(key)
-
 		// Read : before value.
 		if d.opcode == scanSkipSpace {
 			d.scanWhile(scanSkipSpace)
