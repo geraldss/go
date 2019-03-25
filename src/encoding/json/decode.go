@@ -849,14 +849,16 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return bi, nil
 	}
 
-	bf := big.NewFloat(0)
+	bf := &big.Float{}
 	bf, _, err = bf.Parse(s, 0)
 	if err != nil {
 		return bf, err
 	}
 
 	if f, acc := bf.Float64(); acc == big.Exact {
-		return f, nil
+		if nf := big.NewFloat(f); nf.Cmp(bf) == 0 {
+			return f, nil
+		}
 	}
 
 	return bf, nil
