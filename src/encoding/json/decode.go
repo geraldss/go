@@ -839,18 +839,23 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return Number(s), nil
 	}
 
-	i, err := strconv.ParseInt(s, 0, 64)
-	if err == nil {
-		return i, nil
-	}
+	if strings.IndexRune(s, '.') < 0 &&
+		strings.IndexRune(s, 'e') < 0 &&
+		strings.IndexRune(s, 'E') < 0 {
 
-	bi := &big.Int{}
-	if bi, ok := bi.SetString(s, 0); ok {
-		return bi, nil
+		i, err := strconv.ParseInt(s, 0, 64)
+		if err == nil {
+			return i, nil
+		}
+
+		bi := &big.Int{}
+		if bi, ok := bi.SetString(s, 0); ok {
+			return bi, nil
+		}
 	}
 
 	bf := &big.Float{}
-	bf, _, err = bf.Parse(s, 0)
+	bf, _, err := bf.Parse(s, 0)
 	if err != nil {
 		return bf, err
 	}
