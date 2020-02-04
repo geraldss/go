@@ -848,6 +848,11 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 			return i, nil
 		}
 
+		u, err := strconv.ParseUint(s, 0, 64)
+		if err == nil {
+			return u, nil
+		}
+
 		bi := &big.Int{}
 		if bi, ok := bi.SetString(s, 0); ok {
 			return bi, nil
