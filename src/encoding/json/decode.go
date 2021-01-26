@@ -8,8 +8,6 @@
 package json
 
 import (
-	"bytes"
-	"encoding"
 	"encoding/base64"
 	"fmt"
 	"math/big"
