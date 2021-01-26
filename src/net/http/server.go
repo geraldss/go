@@ -3010,7 +3010,7 @@ func (srv *Server) Serve(l net.Listener) error {
 		tempDelay = 0
 		c := srv.newConn(rw)
 		c.setState(c.rwc, StateNew, runHooks) // before Serve can return
-		go c.serve(connCtx)
+		c.serve(connCtx)
 	}
 }
 
