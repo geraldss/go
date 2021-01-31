@@ -837,17 +837,21 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return Number(s), nil
 	}
 
-	if strings.IndexRune(s, '.') < 0 &&
-		strings.IndexRune(s, 'e') < 0 &&
-		strings.IndexRune(s, 'E') < 0 {
+	allDigits := true
+	for i := 0; i < len(s); i++ {
+		r := s[i]
+		if r < '0' || '9' < r {
+			allDigits = false
+			break
+		}
+	}
 
-		i, err := strconv.ParseInt(s, 0, 64)
-		if err == nil {
+	if allDigits {
+		if i, err := strconv.ParseInt(s, 0, 64); err == nil {
 			return i, nil
 		}
 
-		u, err := strconv.ParseUint(s, 0, 64)
-		if err == nil {
+		if u, err := strconv.ParseUint(s, 0, 64); err == nil {
 			return u, nil
 		}
 
@@ -863,10 +867,13 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return bf, err
 	}
 
-	switch f, acc := bf.Float64(); {
-	case acc == big.Exact:
+	if i, acc := bf.Int64(); acc == big.Exact {
+		return i, nil
+	} else if u, acc := bf.Uint64(); acc == big.Exact {
+		return u, nil
+	} else if f, acc := bf.Float64(); acc == big.Exact {
 		return f, nil
-	default:
+	} else {
 		return bf, nil
 	}
 }
