@@ -863,13 +863,12 @@ func (d *decodeState) convertNumber(s string) (interface{}, error) {
 		return bf, err
 	}
 
-	if f, acc := bf.Float64(); acc == big.Exact {
-		if nf := big.NewFloat(f); nf.Cmp(bf) == 0 {
-			return f, nil
-		}
+	switch f, acc := bf.Float64(); {
+	case acc == big.Exact:
+		return f, nil
+	default:
+		return bf, nil
 	}
-
-	return bf, nil
 }
 
 var numberType = reflect.TypeOf(Number(""))
