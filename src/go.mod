@@ -1,4 +1,4 @@
-module std
+module github.com/geraldss/go/src
 
 go 1.16
 
